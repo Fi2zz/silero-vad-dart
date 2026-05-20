@@ -469,14 +469,14 @@ Float32List collectChunksFrom(
   // Calculate total length
   int totalLength = 0;
   for (final t in ts) {
-    totalLength += t.end - t.start;
+    totalLength += (t.end - t.start).toInt();
   }
 
   final result = Float32List(totalLength);
   int offset = 0;
   for (final t in ts) {
-    final chunkLen = t.end - t.start;
-    result.setRange(offset, offset + chunkLen, wav, t.start);
+    final chunkLen = (t.end - t.start).toInt();
+    result.setRange(offset, offset + chunkLen, wav, t.start.toInt());
     offset += chunkLen;
   }
 
@@ -502,8 +502,8 @@ Float32List dropChunksFrom(
   // Mark samples to keep
   final keep = List<bool>.filled(wav.length, true);
   for (final t in ts) {
-    final start = math.max(0, t.start);
-    final end = math.min(t.end, wav.length);
+    final start = math.max(0, t.start.toInt());
+    final end = math.min(t.end.toInt(), wav.length);
     for (int i = start; i < end; i++) {
       keep[i] = false;
     }

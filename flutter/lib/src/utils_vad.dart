@@ -6,19 +6,26 @@ import 'silero_vad_model.dart';
 
 /// Represents a detected speech segment with start and end positions.
 ///
-/// By default, [start] and [end] are in sample indices. When [returnSeconds]
-/// is used, they are in seconds.
+/// By default, [start] and [end] are in sample indices (as [int]).
+/// When [returnSeconds] is used with [getSpeechTimestamps], they store
+/// seconds as [double].
 class SpeechTimestamp {
   /// Start position of the speech segment.
-  int start;
+  ///
+  /// In samples when from [getSpeechTimestamps] with `returnSeconds: false`,
+  /// or in seconds as a [double] when `returnSeconds: true`.
+  num start;
 
   /// End position of the speech segment.
-  int end;
+  ///
+  /// In samples when from [getSpeechTimestamps] with `returnSeconds: false`,
+  /// or in seconds as a [double] when `returnSeconds: true`.
+  num end;
 
   SpeechTimestamp({required this.start, required this.end});
 
   /// Convert to JSON map.
-  Map<String, int> toJson() => {'start': start, 'end': end};
+  Map<String, num> toJson() => {'start': start, 'end': end};
 
   @override
   String toString() => 'SpeechTimestamp(start: $start, end: $end)';
@@ -354,8 +361,8 @@ Future<List<SpeechTimestamp>> getSpeechTimestamps(
     final result = <SpeechTimestamp>[];
     for (final s in filtered) {
       result.add(SpeechTimestamp(
-        start: (s.start / samplingRate * timeResolution).round(),
-        end: (s.end / samplingRate * timeResolution).round(),
+        start: s.start / samplingRate * timeResolution,
+        end: s.end / samplingRate * timeResolution,
       ));
     }
     return result;
