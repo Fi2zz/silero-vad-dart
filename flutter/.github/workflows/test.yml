@@ -1,0 +1,114 @@
+name: Test
+
+on:
+  push:
+    branches: [flutter, main]
+  pull_request:
+    branches: [flutter, main]
+
+jobs:
+  # ==========================================================================
+  # Python Reference - generates expected outputs from original Python impl
+  # ==========================================================================
+  python-reference:
+    name: Generate Python Reference Data
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          pip install onnxruntime numpy
+
+      - name: Generate reference data
+        run: |
+          cd flutter
+          python test/reference_generator.py \
+            ../src/silero_vad/data/silero_vad.onnx \
+            ../tests/data/test.wav \
+            test/reference
+
+      - name: Upload reference data
+        uses: actions/upload-artifact@v4
+        with:
+          name: reference-data
+          path: flutter/test/reference/
+
+  # ==========================================================================
+  # Dart Tests - run against Python reference data
+  # ==========================================================================
+  dart-tests:
+    name: Dart Tests
+    runs-on: ubuntu-latest
+    needs: python-reference
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download reference data
+        uses: actions/download-artifact@v4
+        with:
+          name: reference-data
+          path: flutter/test/reference
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Flutter doctor
+        run: flutter doctor -v
+
+      - name: Install dependencies
+        run: |
+          cd flutter
+          flutter pub get
+
+      - name: Run tests
+        env:
+          TEST_MODEL_PATH: src/silero_vad/data/silero_vad.onnx
+          TEST_WAV_PATH: tests/data/test.wav
+          TEST_REF_DIR: test/reference
+        run: |
+          cd flutter
+          flutter test \
+            --machine \
+            test/silero_vad_test.dart
+
+  # ==========================================================================
+  # Format & Lint
+  # ==========================================================================
+  lint:
+    name: Format & Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutteraction@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: |
+          cd flutter
+          flutter pub get
+
+      - name: Check formatting
+        run: |
+          cd flutter
+          dart format --set-exit-if-changed .
+
+      - name: Run analyzer
+        run: |
+          cd flutter
+          flutter analyze
