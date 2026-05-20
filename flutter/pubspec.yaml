@@ -1,0 +1,27 @@
+name: silero_vad_flutter
+description: >
+  Dart/Flutter port of the Silero Voice Activity Detection (VAD) library.
+  Uses ONNX Runtime for efficient inference on mobile and desktop platforms.
+version: 0.1.0
+homepage: https://github.com/example/silero_vad_flutter
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.10.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  meta: ^1.9.0
+
+  # ONNX Runtime for Flutter – required for inference.
+  flutter_onnxruntime: ^1.6.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  assets:
+    - assets/silero_vad.onnx

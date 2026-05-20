@@ -1,0 +1,47 @@
+name: silero_vad_flutter_example
+description: Example app demonstrating the silero_vad_flutter package.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.0.0
+  flutter: ^3.16.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Silero VAD Flutter package (local path reference)
+  silero_vad_flutter:
+    path: ../
+
+  # Audio recording for real-time VAD demo
+  record: ^5.0.4
+
+  # Permission handling for microphone access
+  permission_handler: ^11.3.0
+
+  # File system access for picking audio files
+  path_provider: ^2.1.2
+
+  # File picker for selecting WAV files
+  file_picker: ^6.1.1
+
+  # WAV file parsing
+  wav: ^1.3.0
+
+  # For displaying formatted durations
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    # Silero VAD ONNX model
+    - assets/models/silero_vad.onnx
